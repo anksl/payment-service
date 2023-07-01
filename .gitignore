@@ -1,0 +1,9 @@
+.class
+.jar
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
