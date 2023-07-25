@@ -3,8 +3,6 @@ package com.transport.controller;
 import com.transport.api.dto.PaymentDto;
 import com.transport.service.PaymentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,24 +24,20 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @GetMapping
-    public ResponseEntity<List<PaymentDto>> getAllPayments(
+    public List<PaymentDto> getAllPayments(
             @RequestParam(defaultValue = "0") Integer pageNo,
             @RequestParam(defaultValue = "10") Integer pageSize,
             @RequestParam(defaultValue = "id") String sortBy) {
-        List<PaymentDto> list = paymentService.getPayments(pageNo, pageSize, sortBy);
-
-        return new ResponseEntity<>(list, HttpStatus.OK);
+        return paymentService.getPayments(pageNo, pageSize, sortBy);
     }
 
     @GetMapping("/find")
-    public ResponseEntity<List<PaymentDto>> getPaymentByPrice(
+    public List<PaymentDto> getPaymentByPrice(
             @RequestParam(defaultValue = "100.00") BigDecimal price,
             @RequestParam(defaultValue = "0") Integer pageNo,
             @RequestParam(defaultValue = "10") Integer pageSize,
             @RequestParam(defaultValue = "id") String sortBy) {
-        List<PaymentDto> list = paymentService.findByPriceGreaterThan(price, pageNo, pageSize, sortBy);
-
-        return new ResponseEntity<>(list, HttpStatus.OK);
+        return paymentService.findByPriceGreaterThan(price, pageNo, pageSize, sortBy);
     }
 
     @GetMapping("/{id}")
@@ -57,17 +51,15 @@ public class PaymentController {
     }
 
     @GetMapping("/current")
-    public ResponseEntity<List<PaymentDto>> getForCurrentUser(
+    public List<PaymentDto> getForCurrentUser(
             @RequestParam(defaultValue = "0") Integer pageNo,
             @RequestParam(defaultValue = "10") Integer pageSize,
             @RequestParam(defaultValue = "id") String sortBy) {
-        List<PaymentDto> list = paymentService.getForCurrentUser(pageNo, pageSize, sortBy);
-
-        return new ResponseEntity<>(list, HttpStatus.OK);
+        return paymentService.getForCurrentUser(pageNo, pageSize, sortBy);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PaymentDto> updatePayment(@PathVariable(value = "id") Long id, @Validated @RequestBody PaymentDto newPayment) {
-        return ResponseEntity.ok(paymentService.updatePayment(id, newPayment));
+    public PaymentDto updatePayment(@PathVariable(value = "id") Long id, @Validated @RequestBody PaymentDto newPayment) {
+        return paymentService.updatePayment(id, newPayment);
     }
 }

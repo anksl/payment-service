@@ -3,7 +3,6 @@ package com.transport.api.exception;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -36,53 +35,49 @@ public class CustomControllerAdvice {
     }
 
     @ExceptionHandler({HttpRequestMethodNotSupportedException.class})
-    public ResponseEntity<Object> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+    public ApiError handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         StringBuilder builder = new StringBuilder();
         builder.append(ex.getMethod());
         builder.append(" method is not supported for this request. Supported methods are ");
         ex.getSupportedHttpMethods().forEach(t -> builder.append(t + " "));
-
-        ApiError apiError = new ApiError(HttpStatus.METHOD_NOT_ALLOWED, ex.getLocalizedMessage(), builder.toString());
-        return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
+        return new ApiError(HttpStatus.METHOD_NOT_ALLOWED, ex.getLocalizedMessage(), builder.toString());
     }
 
     @ExceptionHandler({Exception.class})
-    public ResponseEntity<Object> handleAll(Exception ex, WebRequest request) {
-        ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, ex.getLocalizedMessage(), "error occurred");
-        return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ApiError handleAll(Exception ex, WebRequest request) {
+        return new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, ex.getLocalizedMessage(), "error occurred");
     }
 
     @ExceptionHandler(value = {IllegalArgumentException.class})
-    public ResponseEntity<Object> handleException(IllegalArgumentException ex) {
-        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, ex.getLocalizedMessage(), "error occurred");
-        return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ApiError handleException(IllegalArgumentException ex) {
+        return new ApiError(HttpStatus.NOT_FOUND, ex.getLocalizedMessage(), "error occurred");
     }
 
     @ExceptionHandler({MethodArgumentTypeMismatchException.class})
-    public ResponseEntity<Object> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex, WebRequest request) {
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex, WebRequest request) {
         log.error("TypeNotFoundException: " + ex.getMessage());
 
         String error = ex.getName() + " should be of type " + Objects.requireNonNull(ex.getRequiredType()).getName();
 
-        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), error);
-        return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
+        return new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), error);
     }
 
 
     @ExceptionHandler({NoHandlerFoundException.class})
-    public ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ApiError handleNoHandlerFoundException(NoHandlerFoundException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         String error = "No handler found for " + ex.getHttpMethod() + " " + ex.getRequestURL();
-
-        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, ex.getLocalizedMessage(), error);
-        return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
+        return new ApiError(HttpStatus.NOT_FOUND, ex.getLocalizedMessage(), error);
     }
 
 
     @ExceptionHandler({MissingServletRequestParameterException.class})
-    public ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+    public ApiError handleMissingServletRequestParameter(MissingServletRequestParameterException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         String error = ex.getParameterName() + " parameter is missing";
-
-        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), error);
-        return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
+        return new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), error);
     }
 }
