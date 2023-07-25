@@ -1,0 +1,319 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+    <changeSet author="Anya" id="addresses">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="addresses"/>
+            </not>
+        </preConditions>
+        <createTable tableName="addresses">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="street" type="VARCHAR(255)"/>
+            <column name="house" type="INT"/>
+            <column name="apartment" type="INT"/>
+            <column name="phone_number" type="VARCHAR(20)"/>
+            <column name="city_id" type="BIGINT"/>
+        </createTable>
+        <rollback>
+            <dropTable tableName="addresses"/>
+        </rollback>
+    </changeSet>
+    <changeSet author="Anya" id="load_approach">
+        <sql>CREATE TYPE load_approach AS ENUM ('LTL', 'FTL')</sql>
+    </changeSet>
+    <changeSet author="Anya" id="load_method">
+        <sql>CREATE TYPE load_method AS ENUM ('BEHIND', 'SIDE', 'ABOVE')</sql>
+    </changeSet>
+    <changeSet author="Anya" id="package">
+        <sql>CREATE TYPE package AS ENUM ('TAPE', 'BAG', 'BOX', 'PALLET')</sql>
+    </changeSet>
+    <changeSet author="Anya" id="load_type">
+        <sql>CREATE TYPE load_type AS ENUM ('AUTOMATED', 'MANUAL')</sql>
+    </changeSet>
+    <changeSet author="Anya" id="payment_status">
+        <sql>CREATE TYPE payment_status AS ENUM ('OWE', 'LATE', 'ON_TIME')</sql>
+    </changeSet>
+    <changeSet author="Anya" id="cargos">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="cargos"/>
+            </not>
+        </preConditions>
+        <createTable tableName="cargos">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="type" type="load_approach"/>
+            <column name="loading_method" type="load_method"/>
+            <column name="packaging" type="package"/>
+        </createTable>
+        <rollback>
+            <dropTable tableName="cargos"/>
+        </rollback>
+    </changeSet>
+    <changeSet author="Anya" id="cities">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="cities"/>
+            </not>
+        </preConditions>
+        <createTable tableName="cities">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="country_id" type="BIGINT"/>
+        </createTable>
+        <rollback>
+            <dropTable tableName="cities"/>
+        </rollback>
+    </changeSet>
+    <changeSet author="Anya" id="countries">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="countries"/>
+            </not>
+        </preConditions>
+        <createTable tableName="countries">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="countries"/>
+        </rollback>
+    </changeSet>
+    <changeSet author="Anya" id="deliveries">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="deliveries"/>
+            </not>
+        </preConditions>
+        <createTable tableName="deliveries">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="date" type="date"/>
+            <column name="type" type="load_type">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="deliveries"/>
+        </rollback>
+    </changeSet>
+    <changeSet author="Anya" id="payments">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="payments"/>
+            </not>
+        </preConditions>
+        <createTable tableName="payments">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="date" type="date"/>
+            <column name="price" type="DECIMAL(10, 2)"/>
+            <column name="status" type="payment_status"/>
+            <column name="deadline" type="date"/>
+            <column name="user_id" type="BIGINT"/>
+        </createTable>
+        <rollback>
+            <dropTable tableName="payments"/>
+        </rollback>
+    </changeSet>
+    <changeSet author="Anya" id="roles">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="roles"/>
+            </not>
+        </preConditions>
+        <createTable tableName="roles">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="role" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="roles"/>
+        </rollback>
+    </changeSet>
+    <changeSet author="Anya" id="sizes">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="sizes"/>
+            </not>
+        </preConditions>
+        <createTable tableName="sizes">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="width" type="DECIMAL(5, 2)"/>
+            <column name="height" type="DECIMAL(5, 2)"/>
+            <column name="depth" type="DECIMAL(5, 2)"/>
+            <column name="weight" type="DECIMAL(10, 2)"/>
+        </createTable>
+        <rollback>
+            <dropTable tableName="sizes"/>
+        </rollback>
+    </changeSet>
+    <changeSet author="Anya" id="transportations">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="transportations"/>
+            </not>
+        </preConditions>
+        <createTable tableName="transportations">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="distance" type="SMALLINT"/>
+            <column name="user_id" type="BIGINT"/>
+            <column name="cargo_id" type="BIGINT"/>
+            <column name="loading_id" type="BIGINT">
+                <constraints unique="true"/>
+            </column>
+            <column name="landing_id" type="BIGINT">
+                <constraints unique="true"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="transportations"/>
+        </rollback>
+    </changeSet>
+    <changeSet author="Anya" id="users">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="users"/>
+            </not>
+        </preConditions>
+        <createTable tableName="users">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="password" type="VARCHAR(255)"/>
+            <column name="email" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rating" type="SMALLINT"/>
+            <column defaultValueNumeric="1" name="enabled" type="TINYINT(3)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="users"/>
+        </rollback>
+    </changeSet>
+    <changeSet author="Anya" id="users_roles">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="users_roles"/>
+            </not>
+        </preConditions>
+        <createTable tableName="users_roles">
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="role_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="users_roles"/>
+        </rollback>
+    </changeSet>
+    <changeSet author="Anya" id="addresses_FK">
+        <createIndex indexName="addresses_FK" tableName="addresses">
+            <column name="city_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Anya" id="cargos_name_IDX">
+        <createIndex indexName="cargos_name_IDX" tableName="cargos">
+            <column name="name"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Anya" id="cities_FK">
+        <createIndex indexName="cities_FK" tableName="cities">
+            <column name="country_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Anya" id="deliveries_date_IDX">
+        <createIndex indexName="deliveries_date_IDX" tableName="deliveries">
+            <column name="date"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Anya" id="payments_FK">
+        <createIndex indexName="payments_FK" tableName="payments">
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Anya" id="payments_price_IDX">
+        <createIndex indexName="payments_price_IDX" tableName="payments">
+            <column name="price"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Anya" id="transportations_FK_1">
+        <createIndex indexName="transportations_FK_1" tableName="transportations">
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Anya" id="transportations_FK_2">
+        <createIndex indexName="transportations_FK_2" tableName="transportations">
+            <column name="cargo_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Anya" id="users_roles_FK">
+        <createIndex indexName="users_roles_FK" tableName="users_roles">
+            <column name="role_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Anya" id="addresses_cities_FK">
+        <addForeignKeyConstraint baseColumnNames="city_id" baseTableName="addresses" constraintName="addresses_FK" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="cities" validate="true"/>
+    </changeSet>
+    <changeSet author="Anya" id="cargos_sizes_FK">
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="cargos" constraintName="cargos_FK" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="id" referencedTableName="sizes" validate="true"/>
+    </changeSet>
+    <changeSet author="Anya" id="cities_countries_FK">
+        <addForeignKeyConstraint baseColumnNames="country_id" baseTableName="cities" constraintName="cities_FK" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="countries" validate="true"/>
+    </changeSet>
+    <changeSet author="Anya" id="addresses_deliveries_FK">
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="deliveries" constraintName="deliveries_FK" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="id" referencedTableName="addresses" validate="true"/>
+    </changeSet>
+    <changeSet author="Anya" id="users_payments_FK">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="payments" constraintName="payments_FK" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="users" validate="true"/>
+    </changeSet>
+    <changeSet author="Anya" id="payments_transportations_FK">
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="transportations" constraintName="transportations_FK" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="payments" validate="true"/>
+    </changeSet>
+    <changeSet author="Anya" id="transportations_FK_1_1">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="transportations" constraintName="transportations_FK_1" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="users" validate="true"/>
+    </changeSet>
+    <changeSet author="Anya" id="transportations_FK_2_2">
+        <addForeignKeyConstraint baseColumnNames="cargo_id" baseTableName="transportations" constraintName="transportations_FK_2" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="cargos" validate="true"/>
+    </changeSet>
+    <changeSet author="Anya" id="transportations_FK_3">
+        <addForeignKeyConstraint baseColumnNames="loading_id" baseTableName="transportations" constraintName="transportations_FK_3" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="deliveries" validate="true"/>
+    </changeSet>
+    <changeSet author="Anya" id="transportations_FK_4">
+        <addForeignKeyConstraint baseColumnNames="landing_id" baseTableName="transportations" constraintName="transportations_FK_4" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="deliveries" validate="true"/>
+    </changeSet>
+    <changeSet author="Anya" id="users_roles_FK2">
+        <addForeignKeyConstraint baseColumnNames="role_id" baseTableName="users_roles" constraintName="users_roles_FK" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="roles" validate="true"/>
+    </changeSet>
+    <changeSet author="Anya" id="users_roles_FK_1">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="users_roles" constraintName="users_roles_FK_1" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="users" validate="true"/>
+    </changeSet>
+</databaseChangeLog>
